@@ -29,4 +29,16 @@ async function projectId(req, res, next) {
     }
 }
 
-  module.exports = {projectId,validateProject}
+function completed (req,res,next) {
+  const {completed} = req.body
+  if (!completed) {
+    res.status(400).json({
+      message: 'not completed'
+    })
+  } else {
+    req.completed = true
+    next()
+  }
+}
+
+  module.exports = {projectId,validateProject,completed}
