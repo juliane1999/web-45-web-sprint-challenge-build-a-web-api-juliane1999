@@ -1,24 +1,8 @@
 // Write your "actions" router here!
 const express = require('express')
-const {actionId,actionName} = require('./actions-middlware')
+const {actionId,validateAction} = require('./actions-middlware')
 const Action = require('./actions-model')
 const router= express.Router()
-// - [ ] `[GET] /api/actions`
-//   - Returns an array of actions (or an empty array) as the body of the response.
-// - [ ] `[GET] /api/actions/:id`
-//   - Returns an action with the given `id` as the body of the response.
-//   - If there is no action with the given `id` it responds with a status code 404.
-// - [ ] `[POST] /api/actions`
-//   - Returns the newly created action as the body of the response.
-//   - If the request body is missing any of the required fields it responds with a status code 400.
-//   - When adding an action make sure the `project_id` provided belongs to an existing `project`.
-// - [ ] `[PUT] /api/actions/:id`
-//   - Returns the updated action as the body of the response.
-//   - If there is no action with the given `id` it responds with a status code 404.
-//   - If the request body is missing any of the required fields it responds with a status code 400.
-// - [ ] `[DELETE] /api/actions/:id`
-//   - Returns no response body.
-//   - If there is no action with the given `id` it responds with a status code 404.
 
 router.get('/', (req, res, next) => {
 
@@ -34,7 +18,7 @@ router.get('/', (req, res, next) => {
     res.json(req.action)
 });
 
-router.post('/', actionName, (req, res) => {
+router.post('/', validateAction, (req, res) => {
     Action.insert(req.body)
     .then(newAction => {
       res.status(201).json(newAction)
@@ -44,5 +28,31 @@ router.post('/', actionName, (req, res) => {
         res.status(400).json({message: 'fill in missing required field'})
     })
 });
+
+router.put('/:id', actionId, validateAction, (req, res) => {
+    const changes = req.body;
+    Action.update(req.params.id, changes)
+      .then(action => {
+        if (action) {
+          res.status(200).json(action);
+        } else {
+          res.status(400).json({ message: 'The action could not be found' });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        res.status(404).json({message: 'fill in missing required field'});
+      });
+  });
+
+  
+  router.delete('/:id', actionId, async(req, res, next) => {
+    try {
+      await Action.remove(req.params.id)
+      res.json(req.action)
+    } catch (err) {
+      next(err)
+    }
+  });
 
 module.exports = router

@@ -16,15 +16,18 @@ async function actionId(req, res, next) {
    }
   }
 
-  function actionName (req, res, next) {
-
-    const {name} = req.body
-    if(!name) {
-      res.status(400).json({
-        message: 'missing required name'}) 
-      }else {
+  function validateAction (req, res, next) {
+    const { notes, description,project_id } = req.body
+    if(!notes || !description || !project_id ) {
+        res.status(400).json({
+            message: 'missing either notes or description'
+        })
+    } else {
+        req.notes = notes
+        req.description = description
+        req.project_id= project_id
         next()
     }
-  }
+}
 
-  module.exports = {actionId,actionName}
+  module.exports = {actionId,validateAction}

@@ -15,16 +15,18 @@ async function projectId(req, res, next) {
      console.log(err)
    }
   }
-
-  function projectName (req, res, next) {
-
-    const {name} = req.body
-    if(!name) {
-      res.status(400).json({
-        message: 'missing required name'}) 
-      }else {
+  
+  function validateProject(req, res, next) {
+    const { name, description } = req.body
+    if(!name || !description  ) {
+        res.status(400).json({
+            message: 'missing either name or description'
+        })
+    } else {
+        req.name = name
+        req.description = description
         next()
     }
-  }
+}
 
-  module.exports = {projectId,projectName}
+  module.exports = {projectId,validateProject}

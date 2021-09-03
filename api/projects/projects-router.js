@@ -1,28 +1,8 @@
 // Write your "projects" router here!
 const express = require('express')
-const {projectId,projectName} = require('./projects-middleware')
+const {projectId,validateProject} = require('./projects-middleware')
 const Project = require('./projects-model')
 const router= express.Router()
-// - [ ] `[GET] /api/projects`
-//   - Returns an array of projects as the body of the response.
-//   - If there are no projects it responds with an empty array.
-// - [ ] `[GET] /api/projects/:id`
-//   - Returns a project with the given `id` as the body of the response.
-//   - If there is no project with the given `id` it responds with a status code 404.
-// - [ ] `[POST] /api/projects`
-//   - Returns the newly created project as the body of the response.
-//   - If the request body is missing any of the required fields it responds with a status code 400.
-// - [ ] `[PUT] /api/projects/:id`
-//   - Returns the updated project as the body of the response.
-//   - If there is no project with the given `id` it responds with a status code 404.
-//   - If the request body is missing any of the required fields it responds with a status code 400.
-// - [ ] `[DELETE] /api/projects/:id`
-//   - Returns no response body.
-//   - If there is no project with the given `id` it responds with a status code 404.
-// - [ ] `[GET] /api/projects/:id/actions`
-//   - Returns an array of actions (could be empty) belonging to a project with the given `id`.
-//   - If there is no project with the given `id` it responds with a status code 404.
-
 
 router.get('/', (req, res, next) => {
 
@@ -37,7 +17,7 @@ router.get('/', (req, res, next) => {
       res.json(req.project)
   });
 
-  router.post('/', projectName, (req, res) => {
+  router.post('/', validateProject, (req, res) => {
     Project.insert(req.body)
     .then(newProject => {
       res.status(201).json(newProject)
@@ -47,6 +27,41 @@ router.get('/', (req, res, next) => {
         res.status(400).json({message: 'fill in missing required field'})
     })
 });
+
+
+  router.put('/:id', projectId,validateProject, (req, res) => {
+    const changes = req.body;
+    Project.update(req.params.id, changes)
+      .then(project => {
+        if (project) {
+          res.status(200).json(project);
+        } else {
+          res.status(400).json({ message: 'The project could not be found' });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        res.status(404).json({message: 'fill in missing required field'});
+      });
+  });
+
+  router.delete('/:id', projectId, async(req, res, next) => {
+    try {
+      await Project.remove(req.params.id)
+      res.json(req.project)
+    } catch (err) {
+      next(err)
+    }
+  });
+
+  router.get('/:id/actions', projectId, async (req, res, next) => {
+    try {
+      const result = await Project.getProjectActions(req.params.id)
+      res.json(result)
+    } catch (err) {
+      next(err)
+    }
+  });
 
 
 module.exports = router
