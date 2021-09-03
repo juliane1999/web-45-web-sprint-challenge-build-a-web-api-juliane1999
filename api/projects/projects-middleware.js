@@ -17,28 +17,29 @@ async function projectId(req, res, next) {
   }
   
   function validateProject(req, res, next) {
-    const { name, description } = req.body
-    if(!name || !description  ) {
+    const { name, description,completed } = req.body
+    if(!name || !description && completed ) {
         res.status(400).json({
             message: 'missing either name or description'
         })
     } else {
         req.name = name
         req.description = description
+        req.completed = true
         next()
     }
 }
 
-function completed (req,res,next) {
-  const {completed} = req.body
-  if (!completed) {
-    res.status(400).json({
-      message: 'not completed'
-    })
-  } else {
-    req.completed = true
-    next()
-  }
-}
+// function completed (req,res,next) {
+//   const {completed} = req.body
+//   if (!completed) {
+//     res.status(400).json({
+//       message: 'not completed'
+//     })
+//   } else {
+//     req.completed = true
+//     next()
+//   }
+// }
 
-  module.exports = {projectId,validateProject,completed}
+  module.exports = {projectId,validateProject}

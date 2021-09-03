@@ -1,6 +1,6 @@
 // Write your "projects" router here!
 const express = require('express')
-const {projectId,validateProject} = require('./projects-middleware')
+const {projectId,validateProject,} = require('./projects-middleware')
 const Project = require('./projects-model')
 const router= express.Router()
 
@@ -29,16 +29,33 @@ router.get('/', (req, res, next) => {
 });
 
 
-  router.put('/:id', projectId,validateProject, (req, res) => {
-    Project.update(req.body)
-      .then(project => {
-          res.status(201).json(project);
-      })
-      .catch(error => {
-        console.log(error);
-        res.status(400).json({message: 'fill in missing required field'});
-      });
-  });
+// router.put('/:id', projectId, validateProject,completed, (req, res) => {
+//   const changes = req.body;
+//   Project.update(req.params.id, changes)
+//     .then(project => {
+//         res.status(201).json(project);
+//     })
+//     .catch(error => {
+//       console.log(error);
+//       res.status(400).json({message: 'fill in missing required field'});
+//     });
+// });
+
+router.put('/:id', projectId,validateProject, (req, res) => {
+  const changes = req.body;
+  Project.update(req.params.id, changes)
+    .then(project => {
+      if (project) {
+        res.status(200).json(project);
+      } else {
+        res.status(400).json({ message: 'The project could not be found' });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(404).json({message: 'fill in missing required field'});
+    });
+});
 
   router.delete('/:id', projectId, async(req, res, next) => {
     try {
@@ -49,9 +66,9 @@ router.get('/', (req, res, next) => {
     }
   });
 
-  router.get('/:id/actions', projectId, async (req, res, next) => {
+  router.get('/:id/projects', projectId, async (req, res, next) => {
     try {
-      const result = await Project.getProjectActions(req.params.id)
+      const result = await Project.getProjectprojects(req.params.id)
       res.json(result)
     } catch (err) {
       next(err)
