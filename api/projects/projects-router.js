@@ -54,7 +54,7 @@ router.put('/:id', projectId,validateProject, (req, res) => {
     }
   });
 
-  router.get('/:id/projects', projectId, async (req, res, next) => {
+  router.get('/:id/actions', projectId, async (req, res, next) => {
     try {
       const result = await Project.getProjectActions(req.params.id)
       res.json(result)
