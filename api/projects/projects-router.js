@@ -29,18 +29,6 @@ router.get('/', (req, res, next) => {
 });
 
 
-// router.put('/:id', projectId, validateProject,completed, (req, res) => {
-//   const changes = req.body;
-//   Project.update(req.params.id, changes)
-//     .then(project => {
-//         res.status(201).json(project);
-//     })
-//     .catch(error => {
-//       console.log(error);
-//       res.status(400).json({message: 'fill in missing required field'});
-//     });
-// });
-
 router.put('/:id', projectId,validateProject, (req, res) => {
   const changes = req.body;
   Project.update(req.params.id, changes)
